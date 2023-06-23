@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  sqlite3:
+    image: nouchka/sqlite3:latest
+    stdin_open: true
+    tty: true
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "1337:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-n1x$85p)$u@m*h^clj80@93f9)zrl5%)ga(dvk%ys21y7lfs*9
+      - CELERY_BROKER=amqp://admin:mypass@rabbitmq:5672/
+      - CELERY_BACKEND=amqp://admin:mypass@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+      - sqlite3
+
+  celery:
+    build: .
+    command: celery --app=personal_loan worker --loglevel=info
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=django-insecure-n1x$85p)$u@m*h^clj80@93f9)zrl5%)ga(dvk%ys21y7lfs*9
+      - CELERY_BROKER=amqp://admin:mypass@rabbitmq:5672/
+      - CELERY_BACKEND=amqp://admin:mypass@rabbitmq:5672/
+    depends_on:
+      - web
+      - rabbitmq
+      - sqlite3
+
+  rabbitmq:
+    image: rabbitmq
+    environment:
+        - RABBITMQ_DEFAULT_USER=admin
+        - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+        - "5672:5672"
+        - "15672:15672"
