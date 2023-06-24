@@ -23,7 +23,7 @@ export default function Form() {
             "value": value
         }
 
-        axios.post('http://localhost:1337/', data).then((response) => {
+        axios.post('http://localhost:1337/api/proposal/', data).then((response) => {
             setOpen(true)
             setTtitle('Proposta enviada com sucesso!')
             setMsg('Aguarde a aprovação do seu crédito')

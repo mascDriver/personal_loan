@@ -45,16 +45,23 @@ as etapas abaixo:
     cd personal_loan
     ```
 
-3. Execute o comando Docker Compose para construir e iniciar os contêineres:
+3. Execute o comando Docker Compose para construir e iniciar os contêineres, este comando irá baixar as imagens Docker
+   necessárias, criar os contêineres e iniciar os serviços do sistema.
+   :
 
     ```bash
     docker-compose up -d --build
     ```
 
-Este comando irá baixar as imagens Docker necessárias, criar os contêineres e iniciar os serviços do sistema.
+4. Aguarde até que todos os serviços estejam em execução. Crie um superusuário para acessar o painel administrativo:
 
-4. Aguarde até que todos os serviços estejam em execução. Após a conclusão, você poderá acessar o sistema através de seu
-   navegador da web no endereço `http://localhost:3000`.
+    ```bash
+    docker-compose exec django python manage.py createsuperuser
+    ```
+
+5. Após a conclusão, você poderá acessar o sistema através de seu
+   navegador da web no endereço `http://localhost:3000` para acessar o formulario do usuario e `http://localhost:1337/admin`
+   para acessar o painel administrativo.
 
 ## Configuração
 
