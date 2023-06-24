@@ -1,23 +1,23 @@
 from rest_framework.serializers import ModelSerializer
 
-from .models import Proposal, Client
+from .models import Proposal, Customer
 
 
-class ClientSerializer(ModelSerializer):
+class CustomerSerializer(ModelSerializer):
     class Meta:
-        model = Client
+        model = Customer
         fields = '__all__'
 
 
 class ProposalSerializer(ModelSerializer):
-    client = ClientSerializer()
+    customer = CustomerSerializer()
 
     class Meta:
         model = Proposal
         exclude = ['approved', 'analyzed']
 
     def create(self, validated_data):
-        client_data = validated_data.pop('client')
-        client = Client.objects.create(**client_data)
-        proposal = Proposal.objects.create(client=client, **validated_data)
+        customer_data = validated_data.pop('customer')
+        customer = Customer.objects.create(**customer_data)
+        proposal = Proposal.objects.create(customer=customer, **validated_data)
         return proposal

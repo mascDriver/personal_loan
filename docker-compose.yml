@@ -1,42 +1,63 @@
 version: '3.8'
 
 services:
+  react:
+    build: ./frontend
+    volumes:
+      - './frontend:/app'
+      - '/app/node_modules'
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm start
+    depends_on:
+      - django
+
   sqlite3:
     image: nouchka/sqlite3:latest
     stdin_open: true
     tty: true
-  web:
+    volumes:
+      - ./db/:/root/db/
+
+  django:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "1337:8000"
     environment:
-      - DEBUG=1
-      - SECRET_KEY=django-insecure-n1x$85p)$u@m*h^clj80@93f9)zrl5%)ga(dvk%ys21y7lfs*9
-      - CELERY_BROKER=amqp://admin:mypass@rabbitmq:5672/
-      - CELERY_BACKEND=amqp://admin:mypass@rabbitmq:5672/
+      DEBUG: 1
+      SECRET_KEY: "django-insecure-n1x$$85p)$u@m*h^clj80@93f9)zrl5%)ga(dvk%ys21y7lfs*9"
+      CELERY_BROKER: amqp://admin:mypass@rabbitmq:5672/
+      CELERY_BACKEND: amqp://admin:mypass@rabbitmq:5672/
     depends_on:
       - rabbitmq
       - sqlite3
+    volumes:
+      - ./db/:/root/db/
 
   celery:
     build: .
     command: celery --app=personal_loan worker --loglevel=info
     environment:
-      - DEBUG=1
-      - SECRET_KEY=django-insecure-n1x$85p)$u@m*h^clj80@93f9)zrl5%)ga(dvk%ys21y7lfs*9
-      - CELERY_BROKER=amqp://admin:mypass@rabbitmq:5672/
-      - CELERY_BACKEND=amqp://admin:mypass@rabbitmq:5672/
+      DEBUG: 1
+      SECRET_KEY: "django-insecure-n1x$$85p)$u@m*h^clj80@93f9)zrl5%)ga(dvk%ys21y7lfs*9"
+      CELERY_BROKER: amqp://admin:mypass@rabbitmq:5672/
+      CELERY_BACKEND: amqp://admin:mypass@rabbitmq:5672/
     depends_on:
-      - web
+      - django
       - rabbitmq
       - sqlite3
+    volumes:
+      - ./db/:/root/db/
 
   rabbitmq:
     image: rabbitmq
     environment:
-        - RABBITMQ_DEFAULT_USER=admin
-        - RABBITMQ_DEFAULT_PASS=mypass
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
     ports:
-        - "5672:5672"
-        - "15672:15672"
+      - "5672:5672"
+      - "15672:15672"
