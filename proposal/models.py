@@ -5,7 +5,7 @@ from django.dispatch import receiver
 
 class Customer(models.Model):
     name = models.CharField(verbose_name='Nome', max_length=100)
-    cpf = models.CharField(verbose_name='CPF', max_length=11, unique=True)
+    cpf = models.CharField(verbose_name='CPF', max_length=11)
     address = models.CharField(verbose_name='Endereço', max_length=100)
 
     def __str__(self):

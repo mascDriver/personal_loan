@@ -1,15 +1,18 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from .models import Proposal, Customer
 
 
-class CustomerSerializer(ModelSerializer):
+class CustomerSerializer(serializers.ModelSerializer):
+    cpf = serializers.CharField(min_length=11, max_length=11)
+    address = serializers.CharField(min_length=7)
+
     class Meta:
         model = Customer
         fields = '__all__'
 
 
-class ProposalSerializer(ModelSerializer):
+class ProposalSerializer(serializers.ModelSerializer):
     customer = CustomerSerializer()
 
     class Meta:
